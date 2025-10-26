@@ -80,59 +80,7 @@ class AppModule {
     }
 
 
-    //use cases
 
-    @Provides
-    fun provideValidateLoginInput() : ValidateLoginInput {
-        return ValidateLoginInput()
-    }
-
-    @Provides
-    fun provideValidatePasswordInput() : ValidatePasswordInput {
-        return ValidatePasswordInput()
-    }
-
-    @Provides
-    fun provideValidateUsernameInput() : ValidateUsernameInput {
-        return ValidateUsernameInput()
-    }
-
-    @Provides
-    fun provideLogoutUseCase(userDataRepository: UserDataRepository) : LogoutUseCase {
-        return LogoutUseCase(
-            userDataRepository = userDataRepository
-        )
-    }
-
-    @Provides
-    fun provideValidateFirstNameInput() : ValidateFirstNameInput {
-        return ValidateFirstNameInput()
-    }
-
-    @Provides
-    fun provideValidateMiddleNameInput() : ValidateMiddleNameInput {
-        return ValidateMiddleNameInput()
-    }
-
-    @Provides
-    fun provideValidateLastNameInput() : ValidateLastNameInput {
-        return ValidateLastNameInput()
-    }
-
-    @Provides
-    fun provideProviderInput() : ValidateProviderInput {
-        return ValidateProviderInput()
-    }
-
-    @Provides
-    fun provideValidateRePasswordInput() : ValidateRePasswordInput {
-        return ValidateRePasswordInput()
-    }
-
-    @Provides
-    fun provideValidateEmpNumberInput() : ValidateEmpNoInput {
-        return ValidateEmpNoInput()
-    }
 
 
 

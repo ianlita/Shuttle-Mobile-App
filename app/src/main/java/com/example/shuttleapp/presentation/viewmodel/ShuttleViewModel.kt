@@ -65,8 +65,14 @@ class ShuttleViewModel @Inject constructor(
     private val userDataRepository: UserDataRepository,
     private val shuttleProviderRepository: ShuttleProviderRepository,
     private val loggedUserRepository: RememberedUserRepository,
-    private val passengerQRRepository: PassengerQRRepository
+    private val passengerQRRepository: PassengerQRRepository,
 
+    private val validateQRCodeInput : ValidateQRCodeInput,
+    private val validateDriverInput : ValidateDriverInput,
+    private val validatePlateNumberInput : ValidatePlateNumberInput,
+    private val validateRouteInput : ValidateRouteInput,
+    private val validateShuttleProviderInput : ValidateShuttleProviderInput,
+    private val validateTripTypeInput : ValidateTripTypeInput
 ) : ViewModel() {
 
     private val _userState = MutableStateFlow(UserState())
@@ -655,13 +661,6 @@ class ShuttleViewModel @Inject constructor(
             }
         }
     }
-
-    private val validateQRCodeInput : ValidateQRCodeInput = ValidateQRCodeInput()
-    private val validateDriverInput : ValidateDriverInput = ValidateDriverInput()
-    private val validatePlateNumberInput : ValidatePlateNumberInput = ValidatePlateNumberInput()
-    private val validateRouteInput : ValidateRouteInput = ValidateRouteInput()
-    private val validateShuttleProviderInput : ValidateShuttleProviderInput = ValidateShuttleProviderInput()
-    private val validateTripTypeInput : ValidateTripTypeInput = ValidateTripTypeInput()
 
     fun onPassengerInputEvent(event : QRInputEvent) {
         when(event) {

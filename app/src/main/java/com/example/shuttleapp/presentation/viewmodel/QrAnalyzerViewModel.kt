@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.nio.ByteBuffer
@@ -35,7 +34,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QrAnalyzerViewModel @Inject constructor(
-    private val passengerQRRepository: PassengerQRRepository
+    private val passengerQRRepository: PassengerQRRepository,
+    private val validateQRCodeInput : ValidateQRCodeInput
 ) : ViewModel() {
 
     private var _scannedQRListState = MutableStateFlow(ScannedQRListState())
@@ -179,7 +179,6 @@ class QrAnalyzerViewModel @Inject constructor(
     //for validation
     private val _scannedPassengers = MutableStateFlow<List<PassengerQREntity>>(emptyList())
 
-    private val validateQRCodeInput : ValidateQRCodeInput = ValidateQRCodeInput()
     //TODO pass list here for validation for employee number and department, (use hashset
     fun submitScannedPassengerQR() : Boolean {
 
