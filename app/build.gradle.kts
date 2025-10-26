@@ -100,18 +100,18 @@ dependencies {
     //implementation("com.google.android.gms:play-services-code-scanner:16.1.0") //optional for zxing
 
     //CameraX
-    implementation("androidx.camera:camera-camera2:1.4.2")
-    implementation("androidx.camera:camera-lifecycle:1.4.2")
-    implementation("androidx.camera:camera-view:1.4.2")
+    implementation("androidx.camera:camera-camera2:1.5.1")
+    implementation("androidx.camera:camera-lifecycle:1.5.1")
+    implementation("androidx.camera:camera-view:1.5.1")
 
     //icons extended
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
 
     //Dagger Hilt
-    implementation("com.google.dagger:hilt-android:2.49")
-    ksp("com.google.dagger:hilt-android-compiler:2.49")
-    ksp("androidx.hilt:hilt-compiler:1.2.0")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation("com.google.dagger:hilt-android:2.57.2")
+    ksp("com.google.dagger:hilt-android-compiler:2.57.2")
+    ksp("androidx.hilt:hilt-compiler:1.3.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 
     //SYSTEM UI CONTROLLER - change system navcolors
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
