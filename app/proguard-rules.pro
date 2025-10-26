@@ -19,3 +19,16 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+
+# Keep Gson annotations
+-keepattributes *Annotation*
+
+# Keep all models with Gson serialization
+-keep class com.example.shuttle.data.network.response.** { *; }
+-keep class com.example.shuttle.data.network.request.** { *; }
+
+# Keep fields annotated with @SerializedName
+-keepclassmembers class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
