@@ -1,4 +1,4 @@
-package com.example.shuttle.presentation.state
+package com.example.shuttleapp.presentation.state
 
 import com.example.shuttleapp.domain.model.UserData
 
