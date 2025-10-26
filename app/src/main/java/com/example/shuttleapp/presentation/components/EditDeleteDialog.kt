@@ -1,0 +1,214 @@
+@file:JvmName("DialogsKt")
+
+package com.example.shuttleapp.presentation.components
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import com.example.shuttleapp.ui.theme.NavyBlue
+import com.example.shuttleapp.ui.theme.White
+import kotlinx.coroutines.delay
+
+
+@Composable
+fun EditDeleteChoiceDialog(onEdit:() -> Unit, onDelete:()-> Unit, onDismiss: () -> Unit) {
+
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+                .padding(top = 16.dp, bottom = 16.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = White)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            )
+            {
+                Row(verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .clickable {
+                            onEdit()
+                            onDismiss()
+
+                        }
+                ) {
+                    Text("Edit")
+                }
+                Row(verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .clickable {
+                            showDeleteConfirmation = true
+                        }
+                ) {
+                    Text("Delete")
+                }
+            }
+
+        }
+    }
+
+    if(showDeleteConfirmation) {
+
+        ConfirmBasicDialog(
+            content = "Are you sure you want to delete? This cannot be undone",
+            onDismiss = {
+                showDeleteConfirmation = false
+                onDismiss() },
+            onConfirm = {
+                onDelete()
+            })
+    }
+
+}
+
+@Composable
+fun LoadingDialog() {
+    Dialog(onDismissRequest = {}) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(120.dp)
+                .padding(12.dp),
+            shape = RoundedCornerShape(12.dp),
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    color = NavyBlue,
+                    strokeWidth = 4.dp, // Example stroke width
+                    modifier = Modifier.size(24.dp) // Set size for the indicator
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun InformationTextDialog(
+    onDismissRequest: () -> Unit,
+    dialogTitle: String,
+    dialogText:  String,
+    icon: ImageVector,
+    iconTint: Color
+) {
+    LaunchedEffect(true) {
+        delay(3000)
+        onDismissRequest()
+    }
+
+    AlertDialog(
+        icon = {
+            Icon(modifier = Modifier.size(64.dp), imageVector = icon, contentDescription = "Example Icon", tint = iconTint)
+        },
+        title = {
+            Text(text = dialogTitle)
+        },
+        text = {
+            Text(dialogText, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+        },
+        dismissButton = {
+            TextButton(onClick = {onDismissRequest()}) {
+                Text("Dismiss", color = NavyBlue)
+            }
+        }
+    )
+}
+
+@Composable
+fun ConfirmBasicDialog(
+    content: String ,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+
+    AlertDialog(
+        containerColor = White,
+        onDismissRequest = onDismiss,
+        text = {
+            Text(text = content,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth())
+        },
+        dismissButton = {
+            Box(
+                modifier = Modifier
+                    .padding(end = 24.dp)
+                    .clickable { onDismiss() }
+            ) {
+                Text("Cancel")
+            }
+        },
+        confirmButton = {
+            Box(
+                modifier = Modifier
+                    .padding(end = 12.dp)
+                    .clickable {
+                        onConfirm()
+                        onDismiss()
+                    }
+            ) {
+                Text("Confirm")
+            }
+
+        }
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewDialog() {
+    ConfirmBasicDialog(
+        content = "Are you sure?",
+        onDismiss = {},
+        onConfirm ={}
+    )
+}
+
