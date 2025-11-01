@@ -23,7 +23,7 @@ data class RememberedUserEntity(
     val firstName: String,
     val middleName: String,
     val lastName: String,
-    val shuttleProviderId: String,
+    val shuttleProviderId: String?,
     val isLoggedIn: Boolean,
     val isRemembered: Boolean
 )

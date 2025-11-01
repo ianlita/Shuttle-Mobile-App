@@ -108,8 +108,8 @@ fun HomeScreen(
         Log.i("loadShuttleWithPassenger", "load shuttle pass with passenger done")
     }
     LaunchedEffect(userState) {
-        userState.userData?.let {
-            viewModel.getAllShuttleByProviderId(it.providerId, false)
+        userState.userData?.providerId?.let {
+            viewModel.getAllShuttleByProviderId(it, false)
 
         }
     }

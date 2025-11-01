@@ -94,7 +94,9 @@ fun AVCurrentPassScreenTest(navController: NavController, viewModel: ShuttleView
     LaunchedEffect(userState) {
         //fetch all the
         userState.userData?.let {
-            viewModel.getAllShuttleByProviderId(it.providerId, false)
+            it.providerId?.let { providerId ->
+                viewModel.getAllShuttleByProviderId(providerId, false)
+            }
             viewModel.loadShuttlePassDraft(it.accountId) //fill the draftedShuttlePassState
         }
     }
@@ -224,7 +226,9 @@ fun AVCurrentPassScreenTest(navController: NavController, viewModel: ShuttleView
 
                         userState.userData?.let {
                             viewModel.onShuttlePassInputEvent(ShuttlePassInputEvent.DriverChanged(it.accountId))
-                            viewModel.onShuttlePassInputEvent(ShuttlePassInputEvent.ShuttleProviderChanged(it.providerId))
+                            it.providerId?.let { providerId ->
+                                viewModel.onShuttlePassInputEvent(ShuttlePassInputEvent.ShuttleProviderChanged(providerId))
+                            }
                         }
 
                         ExpandedDropDown (

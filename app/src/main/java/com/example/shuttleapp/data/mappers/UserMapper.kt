@@ -12,7 +12,7 @@ fun UserDataDto.toEntity() : UserDataEntity {
         firstName = firstName ?: "",
         lastName = lastName ?: "",
         middleName = middleName ?: "",
-        shuttleProviderId = shuttleProvider?.id ?: ""
+        shuttleProviderId = shuttleProvider?.id
     )
 }
 

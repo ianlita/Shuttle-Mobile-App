@@ -28,6 +28,6 @@ data class UserDataEntity (
     val firstName: String,
     val lastName: String,
     val middleName: String,
-    val shuttleProviderId: String,
+    val shuttleProviderId: String?,
 
     )

@@ -29,7 +29,7 @@ import com.example.shuttleapp.data.local.RouteEntity
         ShuttleProviderEntity::class,
         RememberedUserEntity::class
     ],
-    version = 24,
+    version = 26,
     exportSchema = false,
 
     )

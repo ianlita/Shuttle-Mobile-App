@@ -6,5 +6,5 @@ data class UserData (
     val firstName: String,
     val lastName: String,
     val middleName: String,
-    val providerId: String
+    val providerId: String?
 )
