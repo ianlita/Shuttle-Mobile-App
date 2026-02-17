@@ -1,5 +1,4 @@
 package com.example.shuttleapp.presentation.viewmodel
-
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -15,7 +14,6 @@ import com.example.shuttleapp.presentation.state.ShuttlePassState
 import com.example.shuttleapp.data.local.ShuttlePassWithPassengerEntity
 import com.example.shuttleapp.data.network.response.ShuttlePassWithPassengerDto
 import com.example.shuttleapp.data.network.response.ShuttlePassWithPassengerResponseBodyDto
-import com.example.shuttleapp.domain.model.ShuttlePassWithPassenger
 import com.example.shuttleapp.domain.repository.PassengerQRRepository
 import com.example.shuttleapp.domain.repository.RoutesRepository
 import com.example.shuttleapp.domain.repository.ShuttlePassRepository
