@@ -90,35 +90,17 @@ class QrAnalyzerViewModel @Inject constructor(
                 try {
                     val result = multiFormatReader.decodeWithState(binaryBitmap)
                     val qrCodeText = result.text
-                    if(qrCodeText != _currentQrResult.value) {
+
+                    if (qrCodeText != _currentQrResult.value) {
                         _currentQrResult.value = qrCodeText
-                        withContext(Dispatchers.IO) {
-                            onQRInputEvent(QRInputEvent.ScannedQRChanged(qrCodeText))//<<--value change
-                            _scanComplete.value = true
-                        }
+                        onQRInputEvent(QRInputEvent.ScannedQRChanged(qrCodeText))
+                        _scanComplete.value = true
                         Log.i("qrCodeAnalyzer", qrCodeText)
                     }
-                    //original
-//                    val result = multiFormatReader.decodeWithState(binaryBitmap)
-//                        withContext(Dispatchers.IO) {
-//                            onQRInputEvent(QRInputEvent.ScannedQRChanged(result.text))//<<--value change
-//                            _scanComplete.value = true
-//                        }
-//                        Log.i("qrCodeAnalyzer", qrCodeText)
-                    //this is when there are no qr code are present in the frame
-                }catch (ex: NotFoundException) {
 
-                    //THIS IS IMPLEMENTED TO DISPLAY AN ERROR MESSAGE INVALID QR SOMETHING
-                    withContext(Dispatchers.IO) { //if there is no qr, (invalid QR / unknown) message will appear
-                        onQRInputEvent(QRInputEvent.ScannedQRChanged(""))//<<--value change
-                    }//try to take this out for the dialog pop up implemented
-
-                    ex.printStackTrace()
-                    Log.e("qrCodeAnalyzer", "Invalid Code / No QR")
-                    Log.i("qrErrorMessage", qrInputState.value.qrCodeErrorMessage.toString())
-                }
-                //this will make the frames to be scanned each
-                finally {
+                } catch (_: NotFoundException) {
+                    // Expected when no QR is in frame
+                } finally {
                     image.close()
                 }
             } else {

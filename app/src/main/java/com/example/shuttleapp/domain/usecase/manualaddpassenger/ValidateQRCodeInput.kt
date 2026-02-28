@@ -18,7 +18,7 @@ class ValidateQRCodeInput() {
         if(qrCodes.any{passenger -> passenger.scannedQR == qrCode}) {
             return ShuttlePassValidationResult(
                 successful = false,
-                errorMessage = "Employee was already onboarded"
+                errorMessage = "Passenger was already onboarded"
             )
         }
 

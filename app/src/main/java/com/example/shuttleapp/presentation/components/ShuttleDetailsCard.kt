@@ -83,7 +83,7 @@ fun ShuttleDetailsCard(
                         ) {
                             AutoResizeText("From", colors = Color.LightGray, fontSize = 12.sp)
                             AutoResizeText(
-                                if (tripType == "Incoming") route else "SEMPHIL",
+                                if (tripType == "Incoming") route else "Pick-Up Point",
                                 colors = White,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Medium
@@ -119,7 +119,7 @@ fun ShuttleDetailsCard(
                         ) {
                             AutoResizeText("To", colors = Color.LightGray, fontSize = 12.sp)
                             AutoResizeText(
-                                if (tripType == "Outgoing") route else "SEMPHIL",
+                                if (tripType == "Outgoing") route else "Drop-off Point",
                                 colors = White,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Medium
