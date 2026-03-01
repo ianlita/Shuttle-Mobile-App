@@ -1,4 +1,4 @@
-# 🚐 Shuttle Mobile App  
+# Shuttle Mobile App  
 ### Offline-First Android Application Built with Clean Architecture & MVVM
 
 Android application designed to manage shuttle pass records using a scalable and maintainable architecture.
@@ -12,9 +12,7 @@ This project demonstrates modern Android development practices including:
 - Hilt Dependency Injection
 - Jetpack Compose (Material 3)
 
----
-
-# 📱 Project Overview
+# Project Overview
 
 Shuttle Mobile App is designed to operate reliably in environments with unstable or limited internet connectivity.
 
@@ -28,9 +26,7 @@ The application ensures:
 
 This project reflects real-world enterprise Android engineering standards.
 
----
-
-# 🧠 Core Features
+# Core Features
 
 ✅ Offline-first data handling  
 ✅ Local Room database storage   
@@ -39,9 +35,8 @@ This project reflects real-world enterprise Android engineering standards.
 ✅ Dependency Injection using Hilt  
 ✅ Coroutine & Flow-based asynchronous handling  
 
----
 
-# 🛠️ Tech Stack
+# Tech Stack
 
 | Category | Technology |
 |----------|------------|
@@ -54,9 +49,7 @@ This project reflects real-world enterprise Android engineering standards.
 | Concurrency | Kotlin Coroutines + Flow |
 | Serialization | Gson / Moshi |
 
----
-
-# 🎨 UI Screens
+# UI Screens
 
 ![Login Screen](screenshots/login.png)
 ![Register Screen](screenshots/register.png)
