@@ -273,7 +273,7 @@ fun QRScannerScreen(shuttlePassId: String, navController: NavController) {
                                 showSuccessMessage = false
                             },
                             dialogTitle = "Success",
-                            dialogText = "Employee boarded successfully",
+                            dialogText = "Passenger boarded successfully",
                             icon = Icons.Default.CheckCircleOutline,
                             iconTint = Green
                         )

@@ -8,7 +8,7 @@ class ValidateQRCodeInput() {
     fun execute(qrCode: String, qrCodes: List<PassengerQREntity>) : ShuttlePassValidationResult {
 
 
-        if(!qrCode.uppercase().contains("SEMPHIL_".uppercase())) { //put !
+        if(!qrCode.uppercase().contains("Passenger_".uppercase())) { //put !
             return ShuttlePassValidationResult(
                 successful = false,
                 errorMessage = "Invalid QR Code. Unknown."
