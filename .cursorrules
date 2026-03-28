@@ -1,0 +1,17 @@
+# Shuttle App Project Rules
+
+## Security
+- **Networking:** Always use HTTPS for production `BASE_URL`. For local testing, keep the `10.0.2.2` alias clear but documented.
+- **Logging:** `HttpLoggingInterceptor` must never use `Level.BODY` in release builds. Use `BuildConfig.DEBUG` checks.
+- **Data Storage:** Sensitive user info (Tokens, PII) must be stored in `EncryptedSharedPreferences` or an encrypted Room database.
+- **Authentication:** All network calls (except Login/Register) must include a Bearer Token in the header.
+
+## Architecture & Navigation
+- **ViewModel Scoping:** Always call `hiltViewModel()` inside the `composable { ... }` block of the `NavHost` to scope ViewModels to the backstack entry, not the Activity.
+- **Type-Safety:** Use Kotlin Serialization for Navigation routes instead of raw strings where possible (compatible with Navigation 2.8.0+).
+- **Dependency Injection:** Use Hilt for all injections. Modules should reside in the `di` package.
+
+## Coding Standards
+- **Serialization:** Prefer `kotlinx.serialization` over Gson for all new DTOs.
+- **Asynchronous Work:** Use Kotlin Coroutines and Flows. Network calls should return `Flow<Resource<T>>`.
+- **UI:** Use Jetpack Compose with Material3. Keep components small and reusable in the `presentation.components` package.
