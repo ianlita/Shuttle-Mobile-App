@@ -76,7 +76,11 @@ import java.util.UUID
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun AVCurrentPassScreenTest(navController: NavController, viewModel: ShuttleViewModel = hiltViewModel()) {
+fun AVCurrentPassScreenTest(
+    userId: String,
+    navController: NavController, 
+    viewModel: ShuttleViewModel = hiltViewModel()
+) {
 
     val routesState by viewModel.routeState.collectAsState()
     val shuttleState by viewModel.shuttleState.collectAsState()
@@ -91,18 +95,27 @@ fun AVCurrentPassScreenTest(navController: NavController, viewModel: ShuttleView
     val draftedShuttlePassState by viewModel.draftedShuttlePassState.collectAsState()
     val draftPassengerListState by viewModel.draftedPassengerListState.collectAsState() //passenger draft
 
-    LaunchedEffect(userState) {
-        //fetch all the
-        userState.userData?.let {
-            it.providerId?.let { providerId ->
+    // 1. Fetch the user profile for this screen instance
+    LaunchedEffect(userId) {
+        viewModel.getUserById(userId)
+    }
+
+    // 2. Once user data is ready, fetch shuttles and the current draft
+    LaunchedEffect(userState.userData) {
+        userState.userData?.let { userData ->
+            userData.providerId?.let { providerId ->
+                Log.d("FetchShuttleData", "Fetching shuttles for provider: $providerId")
                 viewModel.getAllShuttleByProviderId(providerId, false)
             }
-            viewModel.loadShuttlePassDraft(it.accountId) //fill the draftedShuttlePassState
+            viewModel.loadShuttlePassDraft(userData.accountId)
         }
     }
 
-    LaunchedEffect(draftedShuttlePassState) {
-        draftedShuttlePassState.data?.let { viewModel.loadDraftedPassenger(it.id) }
+    // 3. Continuously observe drafted passengers once a pass ID is known
+    LaunchedEffect(draftedShuttlePassState.data?.id) {
+        draftedShuttlePassState.data?.id?.let { passId ->
+            viewModel.loadDraftedPassenger(passId) 
+        }
     }
 
     val title =
@@ -224,10 +237,12 @@ fun AVCurrentPassScreenTest(navController: NavController, viewModel: ShuttleView
 
                         Spacer(modifier = Modifier.height(4.dp))
 
-                        userState.userData?.let {
-                            viewModel.onShuttlePassInputEvent(ShuttlePassInputEvent.DriverChanged(it.accountId))
-                            it.providerId?.let { providerId ->
-                                viewModel.onShuttlePassInputEvent(ShuttlePassInputEvent.ShuttleProviderChanged(providerId))
+                        LaunchedEffect(userState.userData) {
+                            userState.userData?.let {
+                                viewModel.onShuttlePassInputEvent(ShuttlePassInputEvent.DriverChanged(it.accountId))
+                                it.providerId?.let { providerId ->
+                                    viewModel.onShuttlePassInputEvent(ShuttlePassInputEvent.ShuttleProviderChanged(providerId))
+                                }
                             }
                         }
 
@@ -287,8 +302,6 @@ fun AVCurrentPassScreenTest(navController: NavController, viewModel: ShuttleView
 
                                 if(viewModel.submitShuttlePass()) {
 
-                                    //we use coroutine scope because we use suspend fun (getRouteIdByName...)
-                                    //prevents coroutine async race value
                                     coroutineScope.launch(Dispatchers.IO) {
                                         try {
                                             Log.i("CreateShuttlePass", "Creating shuttle Pass. . . ")
@@ -307,7 +320,6 @@ fun AVCurrentPassScreenTest(navController: NavController, viewModel: ShuttleView
                                                     provider = shuttlePassInputState.shuttleProvider
                                                 )
                                                 viewModel.insertShuttlePass(newDraftShuttlePass)
-                                                //userState.userData?.accountId?.let { driverId -> viewModel.loadShuttlePassDraft(driverId) }
                                             }
                                             Log.i("CreateShuttlePass", "Shuttle Pass Created")
                                         } catch (ex: Exception) {
@@ -337,7 +349,7 @@ fun AVCurrentPassScreenTest(navController: NavController, viewModel: ShuttleView
                     ShuttlePassFormTest(
                         shuttlePass = draftedShuttlePassState.data!!,
                         draftPassengerList = draftPassengerListState.list,
-                        viewModel = viewModel, //pwedengeng pasa mo nalang dito yung function na
+                        viewModel = viewModel, 
                         navController = navController
                     )
                 }
@@ -360,14 +372,22 @@ fun ShuttlePassFormTest(shuttlePass: ShuttlePassEntity, draftPassengerList: List
     val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(shuttlePass) {
-
-        //to fetch the respective names ng id's (eg. 0ffass-axxx-xxa == "Mamatid")
         viewModel.getRouteNameById(shuttlePass.routeId)
         viewModel.getPlateNumberByShuttleId(shuttlePass.plateNumber)
         viewModel.getProviderNameById(shuttlePass.provider)
         viewModel.getDriverNameById(shuttlePass.driver)
     }
-    //box
+    
+    // Ensure form is reset if state leak occurs
+    LaunchedEffect(userState.userData) {
+        userState.userData?.let { userData ->
+            viewModel.onShuttlePassInputEvent(ShuttlePassInputEvent.DriverChanged(userData.accountId))
+            userData.providerId?.let { providerId ->
+                viewModel.onShuttlePassInputEvent(ShuttlePassInputEvent.ShuttleProviderChanged(providerId))
+            }
+        }
+    }
+
     Scaffold(snackbarHost = { StyledSnackBarHost(hostState = snackBarHostState) }
     ) { innerPadding ->
         Column(
@@ -388,18 +408,15 @@ fun ShuttlePassFormTest(shuttlePass: ShuttlePassEntity, draftPassengerList: List
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    userState.userData?.let { userData ->
-
-                        ShuttleDetailsCard(
-                            route = "${nameState.routeName}",
-                            departure = if(shuttlePass.departure != "")shuttlePass.departure else "- - - -",
-                            arrival = if(shuttlePass.arrival != "") shuttlePass.arrival else "- - - -",
-                            driver = "${ nameState.driverName }",//"${userData.firstName} ${userData.lastName}",
-                            plateNumber = "${nameState.plateNumber}",
-                            shuttleProvider = "${nameState.providerName}",
-                            tripType = shuttlePass.tripType
-                        )
-                    }
+                    ShuttleDetailsCard(
+                        route = nameState.routeName ?: "",
+                        departure = if(shuttlePass.departure != "") shuttlePass.departure else "- - - -",
+                        arrival = if(shuttlePass.arrival != "") shuttlePass.arrival else "- - - -",
+                        driver = nameState.driverName ?: "",
+                        plateNumber = nameState.plateNumber ?: "",
+                        shuttleProvider = nameState.providerName ?: "",
+                        tripType = shuttlePass.tripType
+                    )
                 }
 
             }
@@ -413,16 +430,15 @@ fun ShuttlePassFormTest(shuttlePass: ShuttlePassEntity, draftPassengerList: List
 
             }
 
-            //Apply line
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(1.dp)
-                    .background(LightGray) // Apply border color
+                    .background(LightGray) 
             )
             Column(
                 modifier = Modifier
-                    .weight(1f) // Takes up all available space above the buttons
+                    .weight(1f) 
                     .fillMaxWidth()
                     .background(White)
             ) {
@@ -465,12 +481,7 @@ fun ShuttlePassFormTest(shuttlePass: ShuttlePassEntity, draftPassengerList: List
                         colors = ButtonDefaults.buttonColors(NavyBlue),
                         elevation = ButtonDefaults.buttonElevation(4.dp),
                         onClick = {
-
-                            //real. navigate to QRSCreen
                             navController.navigate(Route.QrScannerScreen.route + "/${shuttlePass.id}")
-
-                            //aleternative. just open the dialog box instead of QRScreen (manual input)
-                            //showAddPassenger = true //<--
                         })
                     {
                         Icon(
@@ -494,7 +505,6 @@ fun ShuttlePassFormTest(shuttlePass: ShuttlePassEntity, draftPassengerList: List
                                     departure = displayTime()
                                 ))
                                 viewModel.updateShuttlePass(updateTime)
-//                            Toast.makeText(context, "Departure Recorded!", Toast.LENGTH_LONG).show()
                                 coroutineScope.launch {
                                     snackBarHostState.showSnackbar(
                                         message = "Departure Recorded",
@@ -556,7 +566,7 @@ fun ShuttlePassFormTest(shuttlePass: ShuttlePassEntity, draftPassengerList: List
                     viewModel.finalizeShuttleDraft(
                         driverId = it.driver,
                         shuttlePass = it,
-                        passengers = draftPassengerList //draftedPassengerList og
+                        passengers = draftPassengerList 
                     )
                 }
                 viewModel.resetShuttlePassInputState() }
@@ -687,12 +697,10 @@ fun PassengerItemTest(viewModel: ShuttleViewModel  = hiltViewModel(), number: In
 @Composable
 fun EditPassengerDialog(id: String, viewModel: ShuttleViewModel  = hiltViewModel(), onDismiss: ()-> Unit) {
 
-    //1) id
     val passenger by viewModel.passenger.collectAsState()
     val passengerState by viewModel.qrInputState.collectAsState()
     val context = LocalContext.current
 
-    //2) load
     LaunchedEffect(id) {
         viewModel.loadPassenger(id)
     }
@@ -701,7 +709,6 @@ fun EditPassengerDialog(id: String, viewModel: ShuttleViewModel  = hiltViewModel
 
         try {
             if(id != "") {
-                //data changes happens here for fetching existing values
                 viewModel.onPassengerInputEvent(QRInputEvent.ScannedQRChanged(passenger.scannedQR))
             }
             else {
@@ -821,4 +828,3 @@ fun ConfirmDialogTest(onConfirm: ()-> Unit, navController: NavController, onDism
         },
     )
 }
-

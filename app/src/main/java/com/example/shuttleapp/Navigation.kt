@@ -11,7 +11,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.shuttleapp.presentation.LoginScreen
 import com.example.shuttleapp.presentation.RegisterScreen
-import com.example.shuttleapp.presentation.viewmodel.LoginViewModel
 import com.example.shuttleapp.presentation.AVCurrentPassScreenTest
 import com.example.shuttleapp.presentation.EditShuttlePassInformationScreen
 import com.example.shuttleapp.presentation.HomeScreen
@@ -22,175 +21,118 @@ import com.example.shuttleapp.presentation.viewmodel.FilterViewModel
 import com.example.shuttleapp.presentation.viewmodel.QrAnalyzerViewModel
 import com.example.shuttleapp.presentation.viewmodel.ShuttleViewModel
 
-//main screen of the app. handles in the main activity
 @Composable
 fun Navigation(navController: NavHostController = rememberNavController()) {
-    val shuttleViewModel: ShuttleViewModel = hiltViewModel<ShuttleViewModel>()
-    //val registerViewModel: RegisterViewModel = viewModel()
-    val loginViewModel: LoginViewModel = hiltViewModel<LoginViewModel>()
-    val qrViewModel = hiltViewModel<QrAnalyzerViewModel>()
-    val filterViewModel = hiltViewModel<FilterViewModel>()
-
 
     NavHost(navController = navController, startDestination = Route.LoginScreen.route) {
 
         composable(route = Route.RegisterScreen.route) {
-            RegisterScreen(
-                navController = navController
-            )
+            RegisterScreen(navController = navController)
         }
+
         composable(route = Route.LoginScreen.route) {
-            LoginScreen(
-                //loginViewModel = loginViewModel,
+            LoginScreen(navController = navController)
+        }
+
+        composable(
+            route = Route.HomeScreen.route + "/{id}",
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
+        ) { entry ->
+            val id = entry.arguments?.getString("id") ?: ""
+            HomeScreen(
+                userId = id,
+                navController = navController,
+                viewModel = hiltViewModel<ShuttleViewModel>()
+            )
+        }
+
+        composable(
+            route = Route.AVCurrentPassScreen.route + "/{id}",
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
+        ) { entry ->
+            val id = entry.arguments?.getString("id") ?: ""
+            AVCurrentPassScreenTest(
+                userId = id,
+                viewModel = hiltViewModel<ShuttleViewModel>(),
                 navController = navController
             )
         }
 
-        composable(route = Route.HomeScreen.route + "/{id}",
+        composable(
+            route = Route.ShuttlePassListScreen.route + "/{id}",
             arguments = listOf(
                 navArgument("id") {
                     type = NavType.StringType
                     defaultValue = ""
-                    nullable = false
                 }
             )
         ) { entry ->
-
-            val id = if(entry.arguments != null) {
-                entry.arguments!!.getString("id")
-            } else {
-                ""
-            }
-
-            if (id != null) {
-                HomeScreen(
-                    userId = id,
-                    navController = navController,
-                    viewModel = shuttleViewModel
-                )
-            }
-
-        }
-
-        composable(route = Route.AVCurrentPassScreen.route + "/{id}",
-            arguments = listOf(
-                navArgument("id") {
-                    type = NavType.StringType
-                    defaultValue = ""
-                    nullable = false
-                }
+            val id = entry.arguments?.getString("id") ?: ""
+            ShuttlePassListScreen(
+                id = id,
+                shuttleViewModel = hiltViewModel<ShuttleViewModel>(),
+                filterViewModel = hiltViewModel<FilterViewModel>(),
+                navController = navController
             )
-        ) {entry ->
-            val id = if(entry.arguments != null) {
-                entry.arguments!!.getString("id")
-            } else {
-                ""
-            }
-
-            if (id != null) {
-                AVCurrentPassScreenTest(
-                    viewModel = shuttleViewModel,
-                    navController = navController
-                )
-            }
         }
 
-        composable(route = Route.ShuttlePassListScreen.route + "/{id}",
+        composable(
+            route = Route.ShuttlePassItemScreen.route + "/{id}",
             arguments = listOf(
                 navArgument("id") {
                     type = NavType.StringType
                     defaultValue = ""
-                    nullable = false
-                }
-            )
-        ) { entry ->
-            val id = if(entry.arguments != null) {
-                entry.arguments!!.getString("id")
-            } else {
-                ""
-            }
-
-            if(id != null) {
-                ShuttlePassListScreen(
-                    id = id,
-                    shuttleViewModel = shuttleViewModel,
-                    filterViewModel = filterViewModel,
-                    navController = navController
-                )
-            }
-
-
-        }
-
-        composable(route = Route.ShuttlePassItemScreen.route + "/{id}",
-            arguments = listOf(
-                navArgument("id") {
-                    type = NavType.StringType
-                    defaultValue = ""
-                    nullable = false
                 })
         ) { entry ->
-
-            val id = if(entry.arguments != null) {
-                entry.arguments!!.getString("id")
-            } else {
-                ""
-            }
-
-            if (id != null) {
-                ShuttlePassItemScreen(id, viewModel = shuttleViewModel, navController = navController)
-            }
-
+            val id = entry.arguments?.getString("id") ?: ""
+            ShuttlePassItemScreen(
+                id = id, 
+                viewModel = hiltViewModel<ShuttleViewModel>(), 
+                navController = navController
+            )
         }
 
-        composable(route = Route.EditShuttlePassInfoScreen.route + "/{id}",
+        composable(
+            route = Route.EditShuttlePassInfoScreen.route + "/{id}",
             arguments = listOf(
                 navArgument("id") {
                     type = NavType.StringType
                     defaultValue = ""
-                    nullable = false
                 }
             )
         ) { entry ->
-            val id = if(entry.arguments != null) {
-                entry.arguments!!.getString("id")
-            } else {
-                ""
-            }
-
-            if (id != null) {
-                EditShuttlePassInformationScreen(
-                    id = id,
-                    viewModel = shuttleViewModel,
-                    navController = navController
-                )
-            }
+            val id = entry.arguments?.getString("id") ?: ""
+            EditShuttlePassInformationScreen(
+                id = id,
+                viewModel = hiltViewModel<ShuttleViewModel>(),
+                navController = navController
+            )
         }
 
-        composable(route = Route.QrScannerScreen.route + "/{id}",
+        composable(
+            route = Route.QrScannerScreen.route + "/{id}",
             arguments = listOf(
                 navArgument("id") {
                     type = NavType.StringType
                     defaultValue = ""
-                    nullable = false
                 }
             )
         ) { entry ->
-
-            val id = if(entry.arguments != null) {
-                entry.arguments!!.getString("id")
-            } else {
-                ""
-            }
-
-            if (id != null) {
-                QRScannerScreen(id,navController)
-            }
+            val id = entry.arguments?.getString("id") ?: ""
+            QRScannerScreen(id, navController)
         }
-
     }
 }
-
 
 sealed class Route(val route: String) {
     object HomeScreen: Route("homescreen")
