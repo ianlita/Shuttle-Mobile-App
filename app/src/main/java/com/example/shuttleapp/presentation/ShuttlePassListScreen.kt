@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.twotone.Cancel
 import androidx.compose.material.icons.twotone.CheckCircle
 import androidx.compose.material3.HorizontalDivider
@@ -23,9 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
@@ -40,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.shuttleapp.data.mappers.toDto
 import com.example.shuttleapp.presentation.components.ActionDropdownMenu
@@ -62,21 +58,21 @@ import kotlinx.coroutines.withContext
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ShuttlePassListScreen(id: String,
+fun ShuttlePassListScreen(driverId: String,
                           shuttleViewModel: ShuttleViewModel = hiltViewModel(),
                           filterViewModel: FilterViewModel = hiltViewModel(),
                           navController: NavController) {
 
     val filterState by filterViewModel.filterState.collectAsState()
-    val userState by shuttleViewModel.userState.collectAsState()
+    val userState by shuttleViewModel.userState.collectAsState() // call the viewmodel to get the user state
     var uploadUiState by remember { mutableStateOf<UploadUiState>(UploadUiState.Idle) }
     var uploadMessage by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
 
 
-    LaunchedEffect(id) { //with param id para controlled
-        filterViewModel.loadShuttleWithPassenger(id)
+    LaunchedEffect(driverId) { //with param id para controlled
+        filterViewModel.loadShuttleWithPassenger(driverId)
         Log.i("loadShuttleWithPassenger", "load shuttle pass with passenger done")
     }
 
@@ -87,40 +83,32 @@ fun ShuttlePassListScreen(id: String,
                 title = "Completed Shuttle Pass List",
                 navController = navController,
                 action = {
-                    userState.userData?.let { userData ->
+                    ActionDropdownMenu(
+                        onUploadAll = {
 
-                        ActionDropdownMenu(
-                            onUploadAll = {
-
-                                coroutineScope.launch {
-                                    val accountId = userState.userData?.accountId
-                                    if (accountId == null) {
-                                        snackBarHostState.showSnackbar("No account", "Dismiss", duration = SnackbarDuration.Short)
-                                        return@launch
-                                    }
-                                    val unsyncedItems = withContext(Dispatchers.IO) {
-                                        shuttleViewModel.getAllUnsyncedShuttlePasses(accountId)
-                                    }
-                                    if (unsyncedItems.isEmpty()) {
-                                        snackBarHostState.showSnackbar("No unsynced shuttle pass", "Dismiss", duration = SnackbarDuration.Short)
-                                        return@launch
-                                    }
-                                    // transform to DTOs and call viewmodel which will emit events
-                                    shuttleViewModel.postShuttlePassWithPassenger(unsyncedItems.map { it.toDto() })
+                            coroutineScope.launch {
+                                val unsyncedItems = withContext(Dispatchers.IO) {
+                                    shuttleViewModel.getAllUnsyncedShuttlePasses(driverId)
                                 }
-                            },
-                            onDeleteAll = {
-                                coroutineScope.launch {
-                                    snackBarHostState.showSnackbar(
-                                        message = "Delete not authorized",
-                                        actionLabel = "Dismiss",
-                                        withDismissAction = true,
-                                        duration = SnackbarDuration.Short
-                                    )
+                                if (unsyncedItems.isEmpty()) {
+                                    snackBarHostState.showSnackbar("No unsynced shuttle pass", "Dismiss", duration = SnackbarDuration.Short)
+                                    return@launch
                                 }
+                                // transform to DTOs and call viewmodel which will emit events
+                                shuttleViewModel.postShuttlePassWithPassenger(unsyncedItems.map { it.toDto() })
                             }
-                        )
-                    }
+                        },
+                        onDeleteAll = {
+                            coroutineScope.launch {
+                                snackBarHostState.showSnackbar(
+                                    message = "Delete not authorized",
+                                    actionLabel = "Dismiss",
+                                    withDismissAction = true,
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+                        }
+                    )
 
                 }
             )
@@ -142,29 +130,27 @@ fun ShuttlePassListScreen(id: String,
                 horizontalAlignment = Alignment.CenterHorizontally
 
             ) {
-                userState.userData?.let { userData ->
-                    FilterChoiceSegmentedButton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        selectedFilter = filterState.currentFilter,
-                        onFilterSelected = {filter ->
-                            when(filter) {
-                                FilterType.All -> {
-                                    filterViewModel.loadShuttleWithPassenger(userData.accountId)
-                                }
-                                FilterType.Late -> {
-                                    filterViewModel.loadShuttleWithPassengerFilterLate(userData.accountId)
-                                }
-                                FilterType.NotSynced -> {
-                                    filterViewModel.loadShuttleWithPassengerFilterUnsynced(userData.accountId)
-
-                                }
+                FilterChoiceSegmentedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    selectedFilter = filterState.currentFilter,
+                    onFilterSelected = {filter ->
+                        when(filter) {
+                            FilterType.All -> {
+                                filterViewModel.loadShuttleWithPassenger(driverId)
                             }
+                            FilterType.Late -> {
+                                filterViewModel.loadShuttleWithPassengerFilterLate(driverId)
+                            }
+                            FilterType.NotSynced -> {
+                                filterViewModel.loadShuttleWithPassengerFilterUnsynced(driverId)
 
-                        },
-                    )
-                }
+                            }
+                        }
+
+                    },
+                )
 
                 HorizontalDivider(Modifier.fillMaxWidth())
 

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.SyncAlt
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -94,6 +95,34 @@ fun DrawerContent(onLogOut: () -> Unit = {}, userData: UserData, navController: 
             icon = {
                 Icon(
                     imageVector = Icons.Filled.AccountCircle,
+                    tint = NavyBlue,
+                    contentDescription = "profile",
+                    modifier = Modifier.size(46.dp)
+                )
+            },
+            selected = false,
+        )
+
+        NavigationDrawerItem(
+            label = {
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Collector Sync",
+                        color = Color.Black,
+                        fontSize = 16.sp
+                    )
+                }
+
+            },
+            onClick = {
+
+            },
+            icon = {
+                Icon(
+                    imageVector = Icons.Filled.SyncAlt,
                     tint = NavyBlue,
                     contentDescription = "profile",
                     modifier = Modifier.size(46.dp)

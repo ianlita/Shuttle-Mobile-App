@@ -18,7 +18,6 @@ import com.example.shuttleapp.presentation.QRScannerScreen
 import com.example.shuttleapp.presentation.ShuttlePassItemScreen
 import com.example.shuttleapp.presentation.ShuttlePassListScreen
 import com.example.shuttleapp.presentation.viewmodel.FilterViewModel
-import com.example.shuttleapp.presentation.viewmodel.QrAnalyzerViewModel
 import com.example.shuttleapp.presentation.viewmodel.ShuttleViewModel
 
 @Composable
@@ -79,7 +78,7 @@ fun Navigation(navController: NavHostController = rememberNavController()) {
         ) { entry ->
             val id = entry.arguments?.getString("id") ?: ""
             ShuttlePassListScreen(
-                id = id,
+                driverId = id,
                 shuttleViewModel = hiltViewModel<ShuttleViewModel>(),
                 filterViewModel = hiltViewModel<FilterViewModel>(),
                 navController = navController
